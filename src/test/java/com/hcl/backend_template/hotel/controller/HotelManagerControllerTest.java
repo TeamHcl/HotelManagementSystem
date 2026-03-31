@@ -147,7 +147,7 @@ class HotelManagerControllerTest {
   }
 
   @Test
-    void upsertFacilitiesFailsValidationWhenEmpty() throws Exception {
+  void upsertFacilitiesFailsValidationWhenEmpty() throws Exception {
     UpsertHotelFacilitiesRequest request = new UpsertHotelFacilitiesRequest();
     request.setFacilities(List.of());
 
@@ -165,8 +165,7 @@ class HotelManagerControllerTest {
   void listFacilitiesReturnsFacilities() throws Exception {
     List<HotelFacilityResponse> response =
         List.of(
-            new HotelFacilityResponse(
-                7L, "WiFi", FacilityCategory.BASIC, FacilityValue.AVAILABLE));
+            new HotelFacilityResponse(7L, "WiFi", FacilityCategory.BASIC, FacilityValue.AVAILABLE));
 
     when(hotelFacilityService.listMyHotelFacilities(1L)).thenReturn(response);
 

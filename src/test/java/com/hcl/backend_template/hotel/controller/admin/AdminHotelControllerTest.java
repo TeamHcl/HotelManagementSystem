@@ -102,9 +102,7 @@ class AdminHotelControllerTest {
   void decideFailsValidationWhenDecisionMissing() throws Exception {
     mockMvc
         .perform(
-            put("/admin/hotels/{id}", 10)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+            put("/admin/hotels/{id}", 10).contentType(MediaType.APPLICATION_JSON).content("{}"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.title").value("Validation Error"))
         .andExpect(jsonPath("$.errors.decision").exists());
