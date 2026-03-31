@@ -1,0 +1,325 @@
+Hotel Booking Website: Enable customers to browse, select, and book hotel rooms seamlessly while ensuring secure, efficient operations
+
+MVP
+Clean MVP (Only Essentials + Room Number Added)
+User
+- id                BIGSERIAL PRIMARY KEY
+- name              VARCHAR(100) NOT NULL
+- email             VARCHAR(150) UNIQUE NOT NULL
+- password          VARCHAR(255) NOT NULL
+- role              VARCHAR(20) CHECK (role IN ('ADMIN','MANAGER','CUSTOMER'))
+- created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+Hotel
+- id                BIGSERIAL PRIMARY KEY
+- name              VARCHAR(150) NOT NULL
+- location          VARCHAR(255) NOT NULL
+- description       TEXT
+- manager_id        BIGINT REFERENCES User(id)
+- created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+Room
+- id                BIGSERIAL PRIMARY KEY
+- hotel_id          BIGINT REFERENCES Hotel(id)
+- room_number       VARCHAR(20) NOT NULL   -- 🔥 critical addition
+- type              VARCHAR(50)            -- e.g. DELUXE, STANDARD
+- price             DECIMAL(10,2) NOT NULL
+- capacity          INT NOT NULL
+- status            VARCHAR(20) CHECK (status IN ('AVAILABLE','BOOKED','MAINTENANCE'))
+Booking
+- id                BIGSERIAL PRIMARY KEY
+- reservation_number VARCHAR(50) UNIQUE NOT NULL
+- user_id           BIGINT REFERENCES User(id)
+- room_id           BIGINT REFERENCES Room(id)   -- 🔥 direct mapping to actual room
+- check_in          DATE NOT NULL
+- check_out         DATE NOT NULL
+- total_price       DECIMAL(10,2) NOT NULL
+- status            VARCHAR(20) CHECK (status IN ('CONFIRMED','CANCELLED','COMPLETED'))
+- created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+Review
+- id                BIGSERIAL PRIMARY KEY
+- user_id           BIGINT REFERENCES User(id)
+- hotel_id          BIGINT REFERENCES Hotel(id)
+- rating            INT CHECK (rating BETWEEN 1 AND 5)
+- comment           TEXT
+- created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+Relationships (MVP)
+User (1) → (M) Hotel
+User (1) → (M) Booking
+User (1) → (M) Review
+Hotel (1) → (M) Room
+Room (1) → (M) Booking
+Hotel (1) → (M) Review
+
+
+future save refrence
+
+User
+- id
+- name
+- email (UNIQUE)
+- password
+- role (ADMIN, MANAGER, CUSTOMER)
+- loyalty_points (default 0)
+- created_at
+
+Hotel
+- id
+- name
+- location
+- description
+- manager_id (FK User)
+- status (PENDING, UNDER_REVIEW, ACTIVE, REJECTED)
+- average_rating (cached)
+- created_at
+
+HotelDocument Verification Layer
+- id
+- hotel_id (FK Hotel)
+- document_type (LICENSE, GST_CERTIFICATE, OWNERSHIP_PROOF, ID_PROOF)
+- document_url
+- verification_status (PENDING, VERIFIED, REJECTED)
+- uploaded_at
+- verified_at
+- verified_by (FK User - ADMIN)
+
+
+RoomType
+- id
+- hotel_id (FK Hotel)
+- name (Deluxe, Suite, 2BHK)
+- base_price
+- capacity
+- created_at
+
+RoomInventory ((room_type_id, date) UNIQUE)
+- id
+- room_type_id (FK RoomType)
+- date
+- total_rooms
+- available_rooms
+
+Facility
+- id
+- name (WiFi, Parking, Pool)
+- category (BASIC, ROOM, PREMIUM)
+
+HotelFacility
+- id
+- hotel_id (FK Hotel)
+- facility_id (FK Facility)
+- value (FREE, PAID, AVAILABLE)
+
+Booking
+- id
+- reservation_number (UNIQUE)
+- user_id (FK User)
+- room_type_id (FK RoomType)
+- check_in
+- check_out
+- total_price
+- discount_amount (default 0)
+- final_price
+- promotion_id (FK Promotion, nullable)
+- status (PENDING, CONFIRMED, CANCELLED, COMPLETED)
+- parent_booking_id (self FK, nullable)
+- created_at
+
+Review
+- id
+- user_id (FK User)
+- hotel_id (FK Hotel)
+- rating (1–5)
+- comment
+- created_at
+
+STRETCH / FUTURE ENTITIES
+
+HotelDocument
+- id                BIGSERIAL PRIMARY KEY
+- hotel_id          BIGINT REFERENCES Hotel(id)
+- document_type     VARCHAR(50)
+- document_url      TEXT NOT NULL
+- verification_status VARCHAR(20) CHECK (verification_status IN ('PENDING','VERIFIED','REJECTED'))
+- uploaded_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+- verified_at       TIMESTAMP
+- verified_by       BIGINT REFERENCES User(id)
+
+Promotion
+- id
+- code (UNIQUE)
+- type (PERCENTAGE, FIXED)
+- value
+- min_booking_amount
+- max_discount
+- start_date
+- end_date
+- usage_limit
+- used_count
+- is_active
+- created_at
+
+UserPromotion (Per-user usage tracking)
+- id
+- user_id (FK User)
+- promotion_id (FK Promotion)
+- used_count
+
+
+EmailLog(Async communication tracking)
+- id
+- booking_id (FK Booking)
+- email
+- status (SENT, FAILED)
+- sent_at
+
+PriceRule
+- id
+- room_type_id (FK RoomType)
+- start_date
+- end_date
+- multiplier (e.g., 1.2 for peak pricing)
+
+
+RELATIONSHIPS (FINAL CLEAN MODEL)
+User (1) → (M) Hotel
+User (1) → (M) Booking
+User (1) → (M) Review
+User (1) → (M) UserPromotion
+Hotel (1) → (M) RoomType
+Hotel (1) → (M) HotelDocument
+Hotel (1) → (M) Review
+Hotel (1) → (M) HotelFacility
+RoomType (1) → (M) RoomInventory
+RoomType (1) → (M) Booking
+RoomType (1) → (M) PriceRule
+Hotel (M) ↔ (M) Facility (via HotelFacility)
+Booking (M) → (1) Promotion
+Booking (1) → (M) EmailLog
+Booking (1) → (M) Booking (self via parent_booking_id)
+
+
+CRITICAL CONSTRAINTS (NON-NEGOTIABLE)
+✅ Hotel Activation Rule
+Hotel ACTIVE only if:
+ALL required HotelDocuments = VERIFIED
+
+
+Booking Safety
+Use transaction
+Lock inventory rows
+Prevent overbooking
+
+MEMBER 1 — AUTH + USER CORE (Jefino)
+Owns:
+User
+Authentication
+Loyalty
+APIs
+POST   /auth/register
+POST   /auth/login
+
+GET    /users/me
+PUT    /users/me
+
+GET    /users/me/loyalty
+Responsibility
+JWT generation
+Role management (ADMIN / MANAGER / CUSTOMER)
+User profile
+Zero Dependency
+Other modules only need user_id from JWT
+
+
+MEMBER 2 — HOTEL + FACILITY + DOCUMENT VERIFICATION (ruth)
+Owns:
+Hotel
+Facility
+HotelFacility
+HotelDocument
+APIs
+Manager
+POST   /hotels
+PUT    /hotels/{id}
+GET    /hotels/my
+
+POST   /hotels/{id}/documents
+GET    /hotels/{id}/documents
+
+POST   /hotels/{id}/facilities
+GET    /hotels/{id}/facilities
+Admin
+GET    /admin/hotels/review
+PUT    /admin/hotels/{id}/approve
+PUT    /admin/hotels/{id}/reject
+
+PUT    /admin/documents/{id}/verify
+PUT    /admin/documents/{id}/reject
+Public
+GET    /hotels/{id}
+GET    /facilities
+Responsibility
+Hotel onboarding
+Document verification
+Facility mapping
+Zero Dependency
+Only needs manager_id (from JWT)
+No dependency on booking or inventory
+
+
+MEMBER 3 — ROOM + INVENTORY + SEARCH (madu)
+Owns:
+RoomType
+RoomInventory
+PriceRule
+Search logic
+APIs
+Manager
+POST   /room-types
+PUT    /room-types/{id}
+DELETE /room-types/{id}
+
+POST   /inventory/bulk
+PUT    /inventory/update
+Public (CORE SEARCH)
+GET    /search
+GET    /hotels/{id}/room-types
+GET    /availability?roomTypeId=&checkIn=&checkOut=
+Responsibility
+Availability engine
+Pricing logic
+Search filtering
+Zero Dependency
+Reads hotel data (read-only)
+Does NOT depend on booking module
+
+MEMBER 4 — BOOKING + REVIEW + PROMOTIONS + EMAIL (hari)
+Owns:
+Booking
+Review
+Promotion
+UserPromotion
+EmailLog
+APIs
+Booking
+POST   /bookings
+GET    /bookings/my
+PUT    /bookings/{id}/cancel
+POST   /bookings/{id}/rebook
+Promotions
+POST   /bookings/apply-coupon
+Reviews
+POST   /reviews
+GET    /hotels/{id}/reviews
+Email
+POST   /notifications/resend/{bookingId}
+Responsibility
+Booking transaction
+Coupon validation
+Review validation
+Email triggering
+⚠️ Controlled Dependency
+
+ONLY depends on:
+
+availability check API (Member 3)
+
+👉 Not direct DB dependency → use service/API call
