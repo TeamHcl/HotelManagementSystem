@@ -58,19 +58,18 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(problemDetail);
   }
 
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ProblemDetail> handleResponseStatusException(ResponseStatusException ex) {
-        HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
-        HttpStatus resolvedStatus = status == null ? HttpStatus.INTERNAL_SERVER_ERROR : status;
-        String detail = ex.getReason() == null ? "Request failed" : ex.getReason();
+  @ExceptionHandler(ResponseStatusException.class)
+  public ResponseEntity<ProblemDetail> handleResponseStatusException(ResponseStatusException ex) {
+    HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());
+    HttpStatus resolvedStatus = status == null ? HttpStatus.INTERNAL_SERVER_ERROR : status;
+    String detail = ex.getReason() == null ? "Request failed" : ex.getReason();
 
-        ProblemDetail problemDetail =
-                ProblemDetail.forStatusAndDetail(resolvedStatus, detail);
-        problemDetail.setTitle(resolvedStatus.getReasonPhrase());
-        problemDetail.setProperty("timestamp", OffsetDateTime.now());
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(resolvedStatus, detail);
+    problemDetail.setTitle(resolvedStatus.getReasonPhrase());
+    problemDetail.setProperty("timestamp", OffsetDateTime.now());
 
-        return ResponseEntity.status(resolvedStatus).body(problemDetail);
-    }
+    return ResponseEntity.status(resolvedStatus).body(problemDetail);
+  }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ProblemDetail> handleUnexpectedException(Exception ex) {
