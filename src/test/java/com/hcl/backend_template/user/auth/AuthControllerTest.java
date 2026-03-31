@@ -11,29 +11,33 @@ import com.hcl.backend_template.user.auth.controller.AuthController;
 import com.hcl.backend_template.user.auth.dto.AuthResponse;
 import com.hcl.backend_template.user.auth.dto.LoginRequest;
 import com.hcl.backend_template.user.auth.dto.RegisterRequest;
-import com.hcl.backend_template.user.auth.security.JwtAuthenticationFilter;
-import com.hcl.backend_template.user.auth.security.SecurityConfig;
 import com.hcl.backend_template.user.auth.service.AuthService;
 import com.hcl.backend_template.user.entity.UserRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@WebMvcTest(AuthController.class)
-@Import(SecurityConfig.class)
+@ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
-  @Autowired private MockMvc mockMvc;
+  @Mock private AuthService authService;
 
-  @Autowired private ObjectMapper objectMapper;
+  @InjectMocks private AuthController authController;
 
-  @MockBean private AuthService authService;
+  private MockMvc mockMvc;
+  private ObjectMapper objectMapper;
 
-  @MockBean private JwtAuthenticationFilter jwtAuthenticationFilter;
+  @BeforeEach
+  void setUp() {
+    objectMapper = new ObjectMapper();
+    mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
+  }
 
   @Test
   void registerReturnsToken() throws Exception {
