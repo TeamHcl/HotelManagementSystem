@@ -21,19 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Room & Inventory & Search", description = "Room type and inventory management")
 public class RoomInventoryController {
 
-    private final RoomInventoryService roomInventoryService;
+  private final RoomInventoryService roomInventoryService;
 
-    @PostMapping("/inventory/bulk")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Bulk create inventory for a room type over a date range")
-    public void bulkCreate(@Valid @RequestBody InventoryBulkRequest request) {
-        roomInventoryService.bulkCreate(request);
-    }
+  @PostMapping("/inventory/bulk")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Bulk create inventory for a room type over a date range")
+  public void bulkCreate(@Valid @RequestBody InventoryBulkRequest request) {
+    roomInventoryService.bulkCreate(request);
+  }
 
-    @PutMapping("/inventory/update")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Update inventory for a specific date")
-    public void update(@Valid @RequestBody InventoryUpdateRequest request) {
-        roomInventoryService.update(request);
-    }
+  @PutMapping("/inventory/update")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Update inventory for a specific date")
+  public void update(@Valid @RequestBody InventoryUpdateRequest request) {
+    roomInventoryService.update(request);
+  }
 }

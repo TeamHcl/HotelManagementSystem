@@ -15,40 +15,41 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class RoomInventoryService {
 
-    private final RoomInventoryRepository roomInventoryRepository;
+  private final RoomInventoryRepository roomInventoryRepository;
 
-    public void bulkCreate(InventoryBulkRequest request) {
-        if (!request.getStartDate().isBefore(request.getEndDate())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "startDate must be before endDate");
-        }
-        LocalDate date = request.getStartDate();
-        while (date.isBefore(request.getEndDate())) {
-            RoomInventory inventory = new RoomInventory();
-            inventory.setRoomTypeId(request.getRoomTypeId());
-            inventory.setDate(date);
-            inventory.setTotalRooms(request.getTotalRooms());
-            inventory.setAvailableRooms(request.getTotalRooms());
-            roomInventoryRepository.save(inventory);
-            date = date.plusDays(1);
-        }
+  public void bulkCreate(InventoryBulkRequest request) {
+    if (!request.getStartDate().isBefore(request.getEndDate())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "startDate must be before endDate");
     }
+    LocalDate date = request.getStartDate();
+    while (date.isBefore(request.getEndDate())) {
+      RoomInventory inventory = new RoomInventory();
+      inventory.setRoomTypeId(request.getRoomTypeId());
+      inventory.setDate(date);
+      inventory.setTotalRooms(request.getTotalRooms());
+      inventory.setAvailableRooms(request.getTotalRooms());
+      roomInventoryRepository.save(inventory);
+      date = date.plusDays(1);
+    }
+  }
 
-    public void update(InventoryUpdateRequest request) {
-        List<RoomInventory> inventories = roomInventoryRepository.findByRoomTypeIdAndDateBetween(
-                request.getRoomTypeId(), request.getDate(), request.getDate());
-        RoomInventory inventory;
-        if (inventories.isEmpty()) {
-            inventory = new RoomInventory();
-            inventory.setRoomTypeId(request.getRoomTypeId());
-            inventory.setDate(request.getDate());
-            inventory.setTotalRooms(request.getTotalRooms());
-            inventory.setAvailableRooms(request.getTotalRooms());
-        } else {
-            inventory = inventories.get(0);
-            int delta = request.getTotalRooms() - inventory.getTotalRooms();
-            inventory.setTotalRooms(request.getTotalRooms());
-            inventory.setAvailableRooms(Math.max(0, inventory.getAvailableRooms() + delta));
-        }
-        roomInventoryRepository.save(inventory);
+  public void update(InventoryUpdateRequest request) {
+    List<RoomInventory> inventories =
+        roomInventoryRepository.findByRoomTypeIdAndDateBetween(
+            request.getRoomTypeId(), request.getDate(), request.getDate());
+    RoomInventory inventory;
+    if (inventories.isEmpty()) {
+      inventory = new RoomInventory();
+      inventory.setRoomTypeId(request.getRoomTypeId());
+      inventory.setDate(request.getDate());
+      inventory.setTotalRooms(request.getTotalRooms());
+      inventory.setAvailableRooms(request.getTotalRooms());
+    } else {
+      inventory = inventories.get(0);
+      int delta = request.getTotalRooms() - inventory.getTotalRooms();
+      inventory.setTotalRooms(request.getTotalRooms());
+      inventory.setAvailableRooms(Math.max(0, inventory.getAvailableRooms() + delta));
     }
+    roomInventoryRepository.save(inventory);
+  }
 }

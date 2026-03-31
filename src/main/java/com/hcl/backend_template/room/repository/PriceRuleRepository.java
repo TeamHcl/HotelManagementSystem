@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PriceRuleRepository extends JpaRepository<PriceRule, Long> {
 
-    List<PriceRule> findByRoomTypeId(Long roomTypeId);
+  List<PriceRule> findByRoomTypeId(Long roomTypeId);
 }

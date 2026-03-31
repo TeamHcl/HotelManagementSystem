@@ -25,32 +25,32 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Room & Inventory & Search", description = "Room type and inventory management")
 public class RoomTypeController {
 
-    private final RoomTypeService roomTypeService;
+  private final RoomTypeService roomTypeService;
 
-    @PostMapping("/room-types")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create a new room type")
-    public RoomTypeResponse create(@Valid @RequestBody RoomTypeRequest request) {
-        return roomTypeService.create(request);
-    }
+  @PostMapping("/room-types")
+  @ResponseStatus(HttpStatus.CREATED)
+  @Operation(summary = "Create a new room type")
+  public RoomTypeResponse create(@Valid @RequestBody RoomTypeRequest request) {
+    return roomTypeService.create(request);
+  }
 
-    @PutMapping("/room-types/{id}")
-    @Operation(summary = "Update an existing room type")
-    public RoomTypeResponse update(
-            @PathVariable("id") Long id, @Valid @RequestBody RoomTypeRequest request) {
-        return roomTypeService.update(id, request);
-    }
+  @PutMapping("/room-types/{id}")
+  @Operation(summary = "Update an existing room type")
+  public RoomTypeResponse update(
+      @PathVariable("id") Long id, @Valid @RequestBody RoomTypeRequest request) {
+    return roomTypeService.update(id, request);
+  }
 
-    @DeleteMapping("/room-types/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Delete a room type")
-    public void delete(@PathVariable("id") Long id) {
-        roomTypeService.delete(id);
-    }
+  @DeleteMapping("/room-types/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Delete a room type")
+  public void delete(@PathVariable("id") Long id) {
+    roomTypeService.delete(id);
+  }
 
-    @GetMapping("/hotels/{hotelId}/room-types")
-    @Operation(summary = "List room types for a hotel")
-    public List<RoomTypeResponse> getByHotel(@PathVariable("hotelId") Long hotelId) {
-        return roomTypeService.getByHotel(hotelId);
-    }
+  @GetMapping("/hotels/{hotelId}/room-types")
+  @Operation(summary = "List room types for a hotel")
+  public List<RoomTypeResponse> getByHotel(@PathVariable("hotelId") Long hotelId) {
+    return roomTypeService.getByHotel(hotelId);
+  }
 }
