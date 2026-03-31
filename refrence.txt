@@ -1,6 +1,6 @@
 Hotel Booking Website: Enable customers to browse, select, and book hotel rooms seamlessly while ensuring secure, efficient operations
 
-MVP
+MVP (No document verification flow)
 Clean MVP (Only Essentials + Room Number Added)
 User
 - id                BIGSERIAL PRIMARY KEY
@@ -50,7 +50,7 @@ Room (1) → (M) Booking
 Hotel (1) → (M) Review
 
 
-future save refrence
+POST-MVP / Future scope reference
 
 User
 - id
@@ -241,15 +241,11 @@ POST   /hotels
 PUT    /hotels/{id}
 GET    /hotels/my
 
-POST   /hotels/{id}/documents
-GET    /hotels/{id}/documents
-
 POST   /hotels/{id}/facilities
 GET    /hotels/{id}/facilities
 Admin
 GET    /admin/hotels/review
-PUT    /admin/hotels/{id}/approve
-PUT    /admin/hotels/{id}/reject
+PUT    /admin/hotels/{id}
 
 PUT    /admin/documents/{id}/verify
 PUT    /admin/documents/{id}/reject

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
         @Info(
             title = "Hotel Management API",
             version = "v1",
-            description = "Auth and user core endpoints"),
+            description = "Auth, users, hotels, facilities, and admin review endpoints"),
     servers = @Server(url = "/"))
 @SecurityScheme(
     name = "BearerAuth",
