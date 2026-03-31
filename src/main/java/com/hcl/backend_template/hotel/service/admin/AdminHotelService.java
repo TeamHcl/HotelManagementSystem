@@ -21,6 +21,7 @@ public class AdminHotelService {
   private final HotelRepository hotelRepository;
   private final HotelDocumentRepository hotelDocumentRepository;
 
+
   public List<Hotel> listForReview() {
     return hotelRepository.findByStatusInOrderByCreatedAtDesc(
         List.of(HotelStatus.PENDING, HotelStatus.UNDER_REVIEW));
@@ -37,10 +38,6 @@ public class AdminHotelService {
     Hotel hotel = getHotelOrThrow(hotelId);
     if (hotel.getStatus() == HotelStatus.REJECTED) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Rejected hotel cannot be approved");
-    }
-    if (!allRequiredDocumentsVerified(hotelId)) {
-      throw new ResponseStatusException(
-          HttpStatus.CONFLICT, "Cannot approve hotel until all documents are VERIFIED");
     }
     hotel.setStatus(HotelStatus.ACTIVE);
     return hotelRepository.save(hotel);

@@ -41,6 +41,15 @@ public class RoomTypeService {
     return toResponse(saved);
   }
 
+  public RoomTypeResponse getById(Long id) {
+    RoomType existing =
+        roomTypeRepository
+            .findById(id)
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room type not found"));
+    return toResponse(existing);
+  }
+
   public void delete(Long id) {
     if (!roomTypeRepository.existsById(id)) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Room type not found");

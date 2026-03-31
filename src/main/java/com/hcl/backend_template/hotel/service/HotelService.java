@@ -41,6 +41,10 @@ public class HotelService {
     return hotelRepository.findByManagerIdOrderByCreatedAtDesc(currentUser.requireUserId());
   }
 
+  public List<Hotel> listActiveHotels() {
+    return hotelRepository.findByStatusInOrderByCreatedAtDesc(List.of(HotelStatus.ACTIVE));
+  }
+
   public Hotel getActiveHotelOrThrow(Long hotelId) {
     Hotel hotel =
         hotelRepository
