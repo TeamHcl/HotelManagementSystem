@@ -18,14 +18,15 @@ public class PromotionService {
 
   public List<Promotion> listActive() {
     LocalDate today = LocalDate.now();
-    return promotionRepository.findByIsActiveTrueAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-        today, today);
+    return promotionRepository
+        .findByIsActiveTrueAndStartDateLessThanEqualAndEndDateGreaterThanEqual(today, today);
   }
 
   public Promotion getById(Long id) {
     return promotionRepository
         .findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Promotion not found"));
+        .orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Promotion not found"));
   }
 
   public Promotion create(CreatePromotionRequest request) {

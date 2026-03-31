@@ -21,7 +21,6 @@ public class AdminHotelService {
   private final HotelRepository hotelRepository;
   private final HotelDocumentRepository hotelDocumentRepository;
 
-
   public List<Hotel> listForReview() {
     return hotelRepository.findByStatusInOrderByCreatedAtDesc(
         List.of(HotelStatus.PENDING, HotelStatus.UNDER_REVIEW));

@@ -25,13 +25,17 @@ public class PromotionController {
   private final PromotionService promotionService;
 
   @GetMapping("/promotions")
-  @Operation(summary = "List active promotions", security = {})
+  @Operation(
+      summary = "List active promotions",
+      security = {})
   public List<PromotionResponse> listActive() {
     return promotionService.listActive().stream().map(PromotionResponse::from).toList();
   }
 
   @GetMapping("/promotions/{id}")
-  @Operation(summary = "Get promotion by id", security = {})
+  @Operation(
+      summary = "Get promotion by id",
+      security = {})
   public PromotionResponse getById(@PathVariable("id") Long id) {
     return PromotionResponse.from(promotionService.getById(id));
   }
