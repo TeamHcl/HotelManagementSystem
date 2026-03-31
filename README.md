@@ -86,6 +86,28 @@ Current mapped properties:
 - JWT_SECRET -> app.jwt.secret (optional, for JWT auth modules)
 - JWT_EXPIRATION_MS -> app.jwt.expiration-ms (optional)
 
+## Workflow
+
+1) Create or update .env and confirm defaults in application.properties.
+2) Run the app with the Maven wrapper.
+3) Run format and lint checks before commit.
+4) Use feature branches and open PRs against the base branch.
+
+## Architecture
+
+- Layered Spring Boot application with feature modules under com.hcl.backend_template.
+- Feature packages include booking, facility, hotel, notification, promotion, review, room, and user.
+- Shared utilities and cross-cutting concerns live in common.
+- Configuration is environment-first via .env and application.properties.
+
+## Proposed plan
+
+- Add API documentation (OpenAPI) and publish a local docs route.
+- Harden auth: finalize JWT settings, refresh token flow, and role-based access.
+- Expand data model migrations and seed data for local dev.
+- Add service-level tests and repository tests for critical flows.
+- Improve observability with structured logs and health checks.
+
 ## Notes
 
 - .env is ignored by git.

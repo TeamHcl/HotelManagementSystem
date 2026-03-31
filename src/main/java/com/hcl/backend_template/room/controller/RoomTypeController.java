@@ -41,6 +41,12 @@ public class RoomTypeController {
     return roomTypeService.update(id, request);
   }
 
+  @GetMapping("/room-types/{id}")
+  @Operation(summary = "Get a room type by id")
+  public RoomTypeResponse getById(@PathVariable("id") Long id) {
+    return roomTypeService.getById(id);
+  }
+
   @DeleteMapping("/room-types/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @Operation(summary = "Delete a room type")
