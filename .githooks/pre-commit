@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+set -e
+
+printf "Running formatter before commit...\n"
+./mvnw -q spotless:apply
+
+printf "Running lint checks...\n"
+./mvnw -q checkstyle:check
+
+# Re-stage any files changed by formatter
+if git rev-parse --verify HEAD >/dev/null 2>&1; then
+  git add -u
+else
+  git add -A
+fi
