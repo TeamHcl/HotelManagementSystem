@@ -1,0 +1,41 @@
+@baseUrl = http://localhost:8080
+
+### Register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Ada Lovelace",
+  "email": "ada@example.com",
+  "password": "StrongPass123!",
+  "role": "CUSTOMER"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "ada@example.com",
+  "password": "StrongPass123!"
+}
+
+### Get Profile
+@authToken = {{login.response.body.token}}
+GET {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+
+### Update Profile
+PUT {{baseUrl}}/users/me
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Ada L.",
+  "email": "ada@example.com"
+}
+
+### Loyalty
+GET {{baseUrl}}/users/me/loyalty
+Authorization: Bearer {{authToken}}
